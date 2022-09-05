@@ -1,8 +1,42 @@
-﻿@{
+﻿@using VertexAssessmentApp.ViewModel
+@{
     ViewData["Title"] = "Home Page";
+    var user = new UserDetailsViewModel();
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<div class="d-flex justify-content-center align-items-center">
+    <div class="card" style="width:24rem">
+        <form method="post" asp-controller="Home" asp-action="Submit">
+            <div class="form-group">
+                <label for="firstName">FirstName</label>
+                <input type="text" class="form-control" asp-for="@user.FirstName" name="firstName" required />
+            </div>
+            <div class="form-group">
+                <label for="lastName">LastName</label>
+                <input type="text" class="form-control" asp-for="@user.LastName" name="lastName" />
+            </div>
+            <div class="form-group">
+                <label for="middleName">MiddleName</label>
+                <input type="text" class="form-control" asp-for="@user.MiddleName" name="middleName" required/>
+            </div>
+            <div class="form-group">
+                <label for="streetAddress">StreetAddress</label>
+                <input type="text" class="form-control" asp-for="@user.StreetAddress" name="streetAddress" required />
+            </div>
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" class="form-control" asp-for="@user.City" name="city" required />
+            </div>
+            <div class="form-group">
+                <label for="zip">Zip</label>
+                <input type="text" class="form-control" asp-for="@user.Zip" name="zip" required />
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" class="form-control" asp-for="@user.Phone" name="phone" required />
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+        </form>
+    </div>
 </div>

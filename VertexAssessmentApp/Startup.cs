@@ -1,15 +1,21 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VertexAssessmentApp.Interface;
 using VertexAssessmentApp.Models.Context;
+using VertexAssessmentApp.Repository;
 
 namespace VertexAssessmentApp
 {
@@ -26,8 +32,19 @@ namespace VertexAssessmentApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            var connectionString = Configuration.GetConnectionString("SQLConnection");
-            services.AddDbContext<SQLContext>(options=>options.UseSqlServer(connectionString));
+            //TODO: create connection with user & pwd
+            var builder = new SqlConnectionStringBuilder(
+                Configuration.GetConnectionString("SQLConnectionAzure"));
+            builder.Password = Configuration["DbPassword"];
+            builder.UserID = Configuration["DbUser"];
+            services.AddDbContext<SQLContext>(optionBuilder => optionBuilder.UseSqlServer(builder.ConnectionString,
+                    options => options.EnableRetryOnFailure(
+                        maxRetryCount: 10,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorNumbersToAdd: null
+                        )));
+
+            services.AddScoped<IUserDetailRepository, UserDetailRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +73,24 @@ namespace VertexAssessmentApp
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private void InitializeDatabase(IApplicationBuilder app, DbContext db)
+        {
+            var migrationSetting = Configuration.GetSection("MigrationSetting").GetSection("AutoMigrate");
+            if (migrationSetting.Value == "True")
+            {
+                List<string> pendingMigrations = db.Database.GetPendingMigrations().ToList();
+                if (pendingMigrations.Any())
+                {
+                    IMigrator migrator = db.Database.GetService<IMigrator>();
+                    foreach (string targetMigration in pendingMigrations)
+                    {
+                        migrator.Migrate(targetMigration);
+                    }
+                }
+            }
+
         }
     }
 }
