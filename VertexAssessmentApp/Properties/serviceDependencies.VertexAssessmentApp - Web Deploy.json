@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "mssql1": {
-      "secretStore": "AzureAppSettings",
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/vertexassessmentappdbserver/databases/VertexAssessmentApp_db",
-      "type": "mssql.azure",
-      "connectionId": "VertexAssessmentDb"
-    },
     "mssql2": {
       "ignored": "true",
       "type": "mssql",
@@ -14,6 +8,12 @@
     "mssql3": {
       "ignored": "true",
       "type": "mssql",
+      "connectionId": "ConnectionStrings:SQLConnectionAzure"
+    },
+    "mssql1": {
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/vertexassessmentappdbserver/databases/VertexAssessmentApp_db",
+      "type": "mssql.azure",
       "connectionId": "ConnectionStrings:SQLConnectionAzure"
     }
   }
