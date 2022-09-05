@@ -32,11 +32,8 @@ namespace VertexAssessmentApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            //TODO: create connection with user & pwd
             var builder = new SqlConnectionStringBuilder(
                 Configuration.GetConnectionString("SQLConnectionAzure"));
-            //builder.Password = Configuration["DbPassword"];
-            //builder.UserID = Configuration["DbUser"];
             services.AddDbContext<SQLContext>(optionBuilder => optionBuilder.UseSqlServer(builder.ConnectionString,
                     options => options.EnableRetryOnFailure(
                         maxRetryCount: 10,
